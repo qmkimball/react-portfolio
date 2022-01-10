@@ -21,7 +21,42 @@ class Blog extends Component {
         this.getBlogItems = this.getBlogItems.bind(this);
         this.onScroll = this.onScroll.bind(this)
         window.addEventListener("scroll", this.onScroll, false);
-        this.handleNewBlogClick = this.handleNewBlogClick.bind(this)
+        this.handleNewBlogClick = this.handleNewBlogClick.bind(this);
+        this.handleModalClose = this.handleModalClose.bind(this);
+        this.handleNewBlogSubmission = this.handleNewBlogSubmission.bind(this);
+        this.handleDeleteClick = this.handleDeleteClick.bind(this);
+    }
+
+    handleDeleteClick(blog) {
+        axios
+            .delete(
+                `https://api.devcamp.space/portfolio/portfolio_blogs/${blog.id}`,
+                { withCredentials: true }
+            )
+            .then(response => {
+                this.setState({
+                    blogItems: this.state.blogItems.filter(blogItem => {
+                        return blog.id !== blogItem.id;
+                    })
+                });
+                return response.data;
+            })
+            .catch(error => {
+                console.log("delete blog error", error);
+            });
+    }
+
+    handleNewBlogSubmission(blog) {
+        this.setState({
+            blogModalIsOpen: false,
+            blogItems: [blog].concat(this.state.blogItems)
+        });
+    }
+
+    handleModalClose() {
+        this.setState({
+            blogModalIsOpen: false
+        });
     }
 
     handleNewBlogClick() {
@@ -81,18 +116,36 @@ class Blog extends Component {
     
     render() {
         const blogRecords = this.state.blogItems.map(blogItem => {
-        return <BlogItem key={blogItem.id} blogItem={blogItem} />;
+            if (this.props.loggedInStatus === "LOGGED_IN") {
+                return (
+                    <div key={blogItem.id} className="admin-blog-wrapper">
+                        <BlogItem blogItem={blogItem} />
+                        <a onClick={() => this.handleDeleteClick(blogItem)}>
+                            <FontAwesomeIcon icon="trash" />
+                        </a>
+                    </div>
+                )
+            } else {
+                return <BlogItem key={blogItem.id} blogItem={blogItem} />;
+            }
+        
         });
 
         return (
             <div className="blog-container">
-                <BlogModal modalIsOpen={this.state.blogModalIsOpen} />
-
-                <div className="new-blog-link">
-                    <a onClick={this.handleNewBlogClick}>
-                        Open Modal!
-                    </a>
-                </div>
+                <BlogModal 
+                    handleModalClose={this.handleModalClose}
+                    modalIsOpen={this.state.blogModalIsOpen}
+                    handleNewBlogSubmission={this.handleNewBlogSubmission} 
+                />
+                {this.props.loggedInStatus === "LOGGED_IN" ? (
+                    <div className="new-blog-link">
+                        <a onClick={this.handleNewBlogClick}>
+                            <FontAwesomeIcon icon="plus-circle" />
+                        </a>
+                    </div>
+                ) : null}
+        
 
                 <div className="content-container">{blogRecords}</div>
                 

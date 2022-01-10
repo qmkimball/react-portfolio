@@ -12,7 +12,7 @@ export default class PortfolioForm extends Component {
         this.state = {
             name: "",
             description: "",
-            category: "Actor",
+            category: "Actors",
             position: "",
             url: "",
             thumb_image: "",
@@ -150,7 +150,7 @@ export default class PortfolioForm extends Component {
     handleSubmit(event) {
         axios({
             method: this.state.apiAction,
-            url: this.state.url,
+            url: this.state.apiUrl,
             data: this.buildForm(),
             withCredentials: true
         })
@@ -164,7 +164,7 @@ export default class PortfolioForm extends Component {
             this.setState({
                 name: "",
                 description: "",
-                category: "Actor",
+                category: "Actors",
                 position: "",
                 url: "",
                 thumb_image: "",
@@ -222,8 +222,8 @@ export default class PortfolioForm extends Component {
                         onChange={this.handleChange}
                         className="select-element"
                     >
-                        <option value="Actor">Actor</option>
-                        <option value="Singer">Singer</option>
+                        <option value="Actors">Actors</option>
+                        <option value="Singers">Singers</option>
                         <option value="Models">Models</option>
                     </select>
                 </div>
